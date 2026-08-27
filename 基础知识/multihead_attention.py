@@ -11,7 +11,7 @@ class MultiHeadAttention(nn.Module):
         self.d_model = d_model
         self.num_heads = num_heads
         self.d_k = d_model // num_heads
-
+        
         # 定义线性投影层
         self.W_Q = nn.Linear(d_model, d_model, bias=False)
         self.W_K = nn.Linear(d_model, d_model, bias=False)
@@ -28,15 +28,9 @@ class MultiHeadAttention(nn.Module):
         b, n, _ = Q.size()
         m = K.size(1)
         # 线性变换
-        Q = (
-            self.W_Q(Q).view(b, n, self.num_heads, self.d_k).transpose(1, 2)
-        )  # [B,n,h,d_k]
-        K = (
-            self.W_K(K).view(b, m, self.num_heads, self.d_k).transpose(1, 2)
-        )  # [B,m,h,d_k]
-        V = (
-            self.W_V(V).view(b, m, self.num_heads, self.d_k).transpose(1, 2)
-        )  # [B,m,h,d_k]
+        Q = (self.W_Q(Q).view(b, n, self.num_heads, self.d_k).transpose(1, 2))  # [B,n,h,d_k]
+        K = (self.W_K(K).view(b, m, self.num_heads, self.d_k).transpose(1, 2))  # [B,m,h,d_k]
+        V = (self.W_V(V).view(b, m, self.num_heads, self.d_k).transpose(1, 2))  # [B,m,h,d_k]
 
         # 计算注意力得分
         scores = torch.matmul(Q, K.transpose(2, 3)) / math.sqrt(self.d_k)  # [B,n,h,m]
